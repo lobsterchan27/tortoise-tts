@@ -358,6 +358,8 @@ class TextToSpeech:
         assert text_tokens.shape[-1] < 400, 'Too much text provided. Break the text up into separate segments and re-try inference.'
         if voice_samples is not None:
             auto_conditioning = self.get_conditioning_latents(voice_samples, return_mels=False)
+        elif voice_latents is not None:
+            auto_conditioning = conditioning_latents
         else:
             auto_conditioning  = self.get_random_conditioning_latents()
         auto_conditioning = auto_conditioning.to(self.device)
@@ -414,7 +416,7 @@ class TextToSpeech:
                     )
                     codes_ = []
                     yield wav_chunk
-    def tts(self, text, voice_samples=None, k=1, verbose=True, use_deterministic_seed=None,
+    def tts(self, text, voice_samples=None, conditioning_latents=None, k=1, verbose=True, use_deterministic_seed=None,
             # autoregressive generation parameters follow
             num_autoregressive_samples=512, temperature=.8, length_penalty=1, repetition_penalty=2.0, 
             top_p=.8, max_mel_tokens=500,
@@ -466,6 +468,8 @@ class TextToSpeech:
         assert text_tokens.shape[-1] < 400, 'Too much text provided. Break the text up into separate segments and re-try inference.'
         if voice_samples is not None:
             auto_conditioning = self.get_conditioning_latents(voice_samples, return_mels=False)
+        elif conditioning_latents is not None:
+            auto_conditioning = conditioning_latents
         else:
             auto_conditioning  = self.get_random_conditioning_latents()
         auto_conditioning = auto_conditioning.to(self.device)
